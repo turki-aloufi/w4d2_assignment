@@ -1,51 +1,28 @@
-<!-- <div class="todo-container">
-  <form [formGroup]="todoForm" (ngSubmit)="createTask()"
-    style="display: flex; align-items: flex-end; justify-content: center;padding: 5rem; gap: 4px;">
-    <div style="display: flex; flex-direction: column; gap: 4px;">
-      <label for="task-name">Task Name</label>
-      <input id="task-name" formControlName="name" type="text">
-      <button type="submit" >Create Task</button>
-    </div>
-  </form>
-
-  <div class="todo-section">
-    <h3>All Tasks</h3>
-    <div *ngIf="(todos$ | async)!.length === 0" class="empty-message">
-      No Tasks yet. Add a task to get started with the app
-    </div>
-    <ul class="todo-list">
-      <li *ngFor="let todo of todos$ | async" class="todo-item" [ngClass]="{ 'completed': todo.complete }">
-        <span class="todo-name">{{ todo.name }}</span>
-        <div class="todo-actions">
-          <button *ngIf="!todo.complete" (click)="toggleTask(todo.id)" class="complete-btn">✓</button>
-          <button (click)="deleteTask(todo.id)" class="remove-btn">x</button>
-        </div>
-      </li>
-    </ul>
-    <button (click)="resetAllTodos()" class="reset-btn" *ngIf="(todos$ | async)!.length > 0">
-      Reset All Tasks
-    </button>
-  </div>
-</div> -->
-
-
 <div class="container todo-container my-5">
   <!-- Create Task Form -->
   <form [formGroup]="todoForm" (ngSubmit)="createTask()" class="card p-4 mb-4">
     <div class="row g-3 align-items-end">
       <div class="col">
-        <label for="task-name" class="form-label">Task Name</label>
-        <input 
-          id="task-name" 
-          formControlName="name" 
-          type="text" 
-          class="form-control" 
-          placeholder="Enter task name"
+        <label for="task-title" class="form-label">Task Title</label>
+        <input
+          id="task-title"
+          formControlName="title"
+          type="text"
+          class="form-control"
+          placeholder="Enter task title"
+        >
+        <label for="task-description" class="form-label mt-2">Description (optional)</label>
+        <input
+          id="task-description"
+          formControlName="description"
+          type="text"
+          class="form-control"
+          placeholder="Enter description"
         >
       </div>
       <div class="col-auto">
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="btn btn-success"
         >
           {{ isEditing ? 'Update Task' : 'Add Task' }}
@@ -60,34 +37,34 @@
     <div *ngIf="(todos$ | async)?.length === 0" class="alert alert-info text-center">
       No tasks yet. Add a task to get started!
     </div>
-    
+
     <ul class="list-group">
-      <li 
-        *ngFor="let todo of todos$ | async" 
+      <li
+        *ngFor="let todo of todos$ | async"
         class="list-group-item d-flex justify-content-between align-items-center"
-        [ngClass]="{ 'text-muted': todo.complete }"
+        [ngClass]="{ 'text-muted': todo.completed }"
       >
-        <span 
-          [ngClass]="{ 'text-decoration-line-through': todo.complete }"
+        <span
+          [ngClass]="{ 'text-decoration-line-through': todo.completed }"
         >
-          {{ todo.name }}
+          {{ todo.title }} <small *ngIf="todo.description">({{ todo.description }})</small>
         </span>
         <div class="btn-group">
-          <button 
-            *ngIf="!todo.complete" 
-            (click)="toggleTask(todo.id)" 
+          <button
+            *ngIf="!todo.completed"
+            (click)="toggleTask(todo.taskId)"
             class="btn btn-sm btn-primary"
           >
             ✓
           </button>
-          <button 
-            (click)="editTask(todo)" 
+          <button
+            (click)="editTask(todo)"
             class="btn btn-sm btn-warning"
           >
             ✎
           </button>
-          <button 
-            (click)="deleteTask(todo.id)" 
+          <button
+            (click)="deleteTask(todo.taskId)"
             class="btn btn-sm btn-danger"
           >
             ×
@@ -96,12 +73,5 @@
       </li>
     </ul>
 
-    <button 
-      (click)="resetAllTodos()" 
-      class="btn btn-secondary mt-4"
-      *ngIf="(todos$ | async)!.length > 0"
-    >
-      Clear All Tasks
-    </button>
   </div>
 </div>

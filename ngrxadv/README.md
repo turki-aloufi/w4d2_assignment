@@ -1,59 +1,76 @@
-# Ngrxadv
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+# Todo App (Angular Frontend)
 
-## Development server
+This is a standalone Angular application that manages a todo list, interacting with a .NET Web API backend. It uses NgRx for state management and handles CRUD operations directly in the component, with error handling displayed in the UI.
 
-To start a local development server, run:
+## Features
+- Create, read, update, and delete tasks.
+- Toggle task completion status.
+- Display error messages for failed API requests.
+- Uses NgRx Store for state management without Effects.
 
-```bash
-ng serve
+## Prerequisites
+- Node.js (v16+ recommended)
+- Angular CLI (`npm install -g @angular/cli`)
+- .NET Web API backend running at `http://localhost:7260/api/task` (see backend README)
+
+## Project Structure
+- src/
+  - app/
+    - app.component.ts        # Root component
+    - app.config.ts           # Standalone app configuration
+    - app.routes.ts           # Routing configuration
+    - todo.component.ts       # Main todo component with CRUD logic
+    - todo.component.html     # Template with UI and error display
+    - todo.component.css      # Styles
+    - state/
+      - todo.actions.ts       # NgRx actions
+      - todo.reducer.ts       # NgRx reducer with error state
+      - todo.selector.ts      # NgRx selectors
+  - task.service.ts          # Service for API calls
+  - main.ts                  # Bootstrap file
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Setup Instructions
+1. **Clone the Repository:**
+   ```bash
+   git clone <repository-url>
+   cd <angular-project-folder>
+   ```
 
-## Code scaffolding
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+3. **Run the Application:**
+   ```bash
+   ng serve
+   ```
+   - Open `http://localhost:4200` in your browser.
 
-```bash
-ng generate component component-name
-```
+4. **Ensure Backend is Running:**
+   - The app connects to `http://localhost:7260/api/task`. Start the .NET Web API (see backend README) before running Angular.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Usage
+- **Add Task:** Enter a title and optional description, then click "Add Task".
+- **Edit Task:** Click the ✎ button, update the task, and click "Update Task".
+- **Toggle Task:** Click ✓ to mark a task as completed (only shown for incomplete tasks).
+- **Delete Task:** Click × to remove a task.
+- **Error Handling:** Errors (e.g., "Failed to load tasks") appear in a red alert box if the backend is unavailable or an operation fails.
 
-```bash
-ng generate --help
-```
+## Configuration
+- **API URL:** Edit `task.service.ts` if the backend URL differs:
+  ```typescript
+  private apiUrl = 'http://localhost:7260/api/task';
+  ```
 
-## Building
+## Dependencies
+- `@angular/core`, `@angular/common`, `@angular/forms` for Angular functionality.
+- `@ngrx/store` for state management.
+- `rxjs` for Observables.
+- Bootstrap (assumed in HTML for styling; add via CDN or `npm install bootstrap`).
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Troubleshooting
+- **API Connection Error:** Ensure the .NET backend is running and CORS is enabled.
+- **Blank Page:** Check the console (F12) for errors and verify `ng serve` output.

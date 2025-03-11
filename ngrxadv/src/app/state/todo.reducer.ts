@@ -1,32 +1,37 @@
-import { createReducer, on } from "@ngrx/store";
-import { createTask, toggleTask, deleteTask, resetAllTodos, updateTask } from "./todo.actions";
+import { createReducer, on } from '@ngrx/store';
+import { loadTasksSuccess, createTaskSuccess, updateTaskSuccess, deleteTaskSuccess, setError, clearError } from './todo.actions';
 
-export type Task = {
-  id: string,
-  name: string,
-  complete: boolean
+export interface Task {
+  taskId: string;
+  title: string;
+  description?: string;
+  completed: boolean;
 }
 
-export const initialState: Task[] = [];
+export interface TaskState {
+  tasks: Task[];
+  error: string | null;
+}
+
+export const initialState: TaskState = {
+  tasks: [],
+  error: null
+};
 
 export const todoReducer = createReducer(
   initialState,
-  on(createTask, (state, { task }) => [
+  on(loadTasksSuccess, (state, { tasks }) => ({ ...state, tasks, error: null })),
+  on(createTaskSuccess, (state, { task }) => ({ ...state, tasks: [...state.tasks, task], error: null })),
+  on(updateTaskSuccess, (state, { task }) => ({
     ...state,
-    {
-      id: Date.now().toString(), // Generates a new ID for new tasks
-      name: task.name,
-      complete: task.complete
-    }
-  ]),
-  on(toggleTask, (state, { id }) =>
-    state.map(task => (task.id === id ? { ...task, complete: !task.complete } : task)) // Fixed to toggle, not just set to true
-  ),
-  on(deleteTask, (state, { id }) =>
-    state.filter(task => task.id !== id)
-  ),
-  on(resetAllTodos, () => []),
-  on(updateTask, (state, { task }) =>
-    state.map(t => (t.id === task.id ? { ...task } : t)) // Updates existing task
-  )
+    tasks: state.tasks.map(t => (t.taskId === task.taskId ? task : t)),
+    error: null
+  })),
+  on(deleteTaskSuccess, (state, { id }) => ({
+    ...state,
+    tasks: state.tasks.filter(t => t.taskId !== id),
+    error: null
+  })),
+  on(setError, (state, { error }) => ({ ...state, error })),
+  on(clearError, (state) => ({ ...state, error: null }))
 );
