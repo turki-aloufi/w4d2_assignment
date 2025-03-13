@@ -1,77 +1,43 @@
 <div class="container todo-container my-5">
-  <!-- Create Task Form -->
   <form [formGroup]="todoForm" (ngSubmit)="createTask()" class="card p-4 mb-4">
     <div class="row g-3 align-items-end">
       <div class="col">
-        <label for="task-title" class="form-label">Task Title</label>
-        <input
-          id="task-title"
-          formControlName="title"
-          type="text"
-          class="form-control"
-          placeholder="Enter task title"
-        >
-        <label for="task-description" class="form-label mt-2">Description (optional)</label>
-        <input
-          id="task-description"
-          formControlName="description"
-          type="text"
-          class="form-control"
-          placeholder="Enter description"
+        <label for="task-name" class="form-label">Task Name</label>
+        <input 
+          id="task-name" 
+          formControlName="name" 
+          type="text" 
+          class="form-control" 
+          placeholder="Enter task name"
         >
       </div>
       <div class="col-auto">
-        <button
-          type="submit"
-          class="btn btn-success"
-        >
+        <button type="submit" class="btn btn-success">
           {{ isEditing ? 'Update Task' : 'Add Task' }}
         </button>
       </div>
     </div>
   </form>
 
-  <!-- Todo List Section -->
   <div class="card p-4">
     <h3 class="card-title mb-4">Task List</h3>
-    <div *ngIf="(todos$ | async)?.length === 0" class="alert alert-info text-center">
+    <div *ngIf="error$ | async as error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <div *ngIf="(todos$ | async)?.length === 0 && !(error$ | async)" class="alert alert-info text-center">
       No tasks yet. Add a task to get started!
     </div>
-
     <ul class="list-group">
-      <li
-        *ngFor="let todo of todos$ | async"
-        class="list-group-item d-flex justify-content-between align-items-center"
-        [ngClass]="{ 'text-muted': todo.completed }"
-      >
-        <span
-          [ngClass]="{ 'text-decoration-line-through': todo.completed }"
-        >
-          {{ todo.title }} <small *ngIf="todo.description">({{ todo.description }})</small>
+      <li *ngFor="let todo of todos$ | async" class="list-group-item d-flex justify-content-between align-items-center" [ngClass]="{ 'text-muted': todo.complete }">
+        <span [ngClass]="{ 'text-decoration-line-through': todo.complete }">
+          {{ todo.name }} <!-- Should now show "turki" from title -->
         </span>
         <div class="btn-group">
-          <button
-            *ngIf="!todo.completed"
-            (click)="toggleTask(todo.taskId)"
-            class="btn btn-sm btn-primary"
-          >
-            ✓
-          </button>
-          <button
-            (click)="editTask(todo)"
-            class="btn btn-sm btn-warning"
-          >
-            ✎
-          </button>
-          <button
-            (click)="deleteTask(todo.taskId)"
-            class="btn btn-sm btn-danger"
-          >
-            ×
-          </button>
+          <button *ngIf="!todo.complete" (click)="toggleTask(todo.id)" class="btn btn-sm btn-primary">✓</button>
+          <button (click)="editTask(todo)" class="btn btn-sm btn-warning">✎</button>
+          <button (click)="deleteTask(todo.id)" class="btn btn-sm btn-danger">×</button>
         </div>
       </li>
     </ul>
-
   </div>
 </div>

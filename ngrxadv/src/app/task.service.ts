@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Task } from './state/todo.reducer';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+interface TaskDTO {
+  taskId: string; // Lowercase to match backend
+  title: string;  // Lowercase to match backend
+  description: string; // Lowercase to match backend
+  completed: boolean; // Lowercase to match backend
+}
 
 @Injectable({
   providedIn: 'root'
@@ -14,22 +20,55 @@ export class TaskService {
   constructor(private http: HttpClient) {}
 
   getAllTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.apiUrl);
+    return this.http.get<TaskDTO[]>(this.apiUrl).pipe(
+      map(tasks => tasks.map(t => ({
+        id: t.taskId,
+        name: t.title, // Match lowercase title
+        complete: t.completed
+      })))
+    );
   }
 
   getTask(id: string): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+    return this.http.get<TaskDTO>(`${this.apiUrl}/${id}`).pipe(
+      map(t => ({
+        id: t.taskId,
+        name: t.title, // Match lowercase title
+        complete: t.completed
+      }))
+    );
   }
 
-  createTask(task: Omit<Task, 'taskId'>): Observable<Task> {
-    return this.http.post<Task>(this.apiUrl, task);
+  createTask(task: Task): Observable<Task> {
+    const taskDTO: TaskDTO = {
+      taskId: task.id, // Lowercase to match backend
+      title: task.name, // Lowercase to match backend
+      description: '',   // Lowercase to match backend
+      completed: task.complete // Lowercase to match backend
+    };
+    return this.http.post<TaskDTO>(this.apiUrl, taskDTO).pipe(
+      map(t => {
+        console.log('Created Task Response:', t); // Debug
+        return {
+          id: t.taskId,
+          name: t.title, // Match lowercase title
+          complete: t.completed
+        };
+      })
+    );
   }
 
   updateTask(task: Task): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${task.taskId}`, task);
+    const taskDTO: TaskDTO = {
+      taskId: task.id,
+      title: task.name,
+      description: '',
+      completed: task.complete
+    };
+    return this.http.put<void>(`${this.apiUrl}/${task.id}`, taskDTO);
   }
 
   deleteTask(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-} 
+}
